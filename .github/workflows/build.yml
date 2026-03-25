@@ -45,17 +45,22 @@ jobs:
 
           $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
 
+          # Create BC Container with volume mapping
           New-BcContainer `
             -accept_eula `
             -containerName bcbuild `
             -artifactUrl $artifactUrl `
             -auth UserPassword `
-            -Credential $credential
+            -Credential $credential `
+            -updateHosts `
+            -includeAL `
+            -additionalParameters @("--volume ${env:GITHUB_WORKSPACE}:c:\src")
 
+          # Compile AL App
           Compile-AppInBCContainer `
             -containerName bcbuild `
-            -appProjectFolder $env:GITHUB_WORKSPACE `
-            -appOutputFolder "$env:GITHUB_WORKSPACE\output" `
+            -appProjectFolder "c:\src" `
+            -appOutputFolder "c:\src\output" `
             -credential $credential
 
       - name: Upload Artifact
@@ -63,3 +68,9 @@ jobs:
         with:
           name: BC-App
           path: output
+
+      - name: Remove Container
+        if: always()
+        shell: powershell
+        run: |
+          Remove-BcContainer -containerName bcbuild -force
