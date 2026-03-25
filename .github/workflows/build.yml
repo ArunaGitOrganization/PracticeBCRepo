@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install BcContainerHelper
         shell: powershell
@@ -45,8 +45,8 @@ jobs:
 
           $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
 
-          # IMPORTANT: Assign workspace to variable (fixes volume issue)
-          $workspace = $env:GITHUB_WORKSPACE
+          # ✅ FIX: Use actual working directory (NOT env variable)
+          $workspace = (Get-Location).Path
           Write-Host "Workspace path: $workspace"
 
           # Create BC Container with correct volume mapping
@@ -58,7 +58,7 @@ jobs:
             -Credential $credential `
             -updateHosts `
             -includeAL `
-            -additionalParameters @("--volume $workspace:c:\src")
+            -additionalParameters @("--volume ${workspace}:c:\src")
 
           # Compile AL App
           Compile-AppInBCContainer `
@@ -77,4 +77,4 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          Remove-BcContainer -containerName bcbuild -force
+          Remove-BcContainer -containerName bcbuild
