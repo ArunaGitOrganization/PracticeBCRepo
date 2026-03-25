@@ -45,7 +45,11 @@ jobs:
 
           $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
 
-          # Create BC Container with volume mapping
+          # IMPORTANT: Assign workspace to variable (fixes volume issue)
+          $workspace = $env:GITHUB_WORKSPACE
+          Write-Host "Workspace path: $workspace"
+
+          # Create BC Container with correct volume mapping
           New-BcContainer `
             -accept_eula `
             -containerName bcbuild `
@@ -54,7 +58,7 @@ jobs:
             -Credential $credential `
             -updateHosts `
             -includeAL `
-            -additionalParameters @("--volume ${env:GITHUB_WORKSPACE}:c:\src")
+            -additionalParameters @("--volume $workspace:c:\src")
 
           # Compile AL App
           Compile-AppInBCContainer `
