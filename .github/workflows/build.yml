@@ -1,3 +1,22 @@
+# name: Build BC App
+
+# on:
+#   push:
+#     branches:
+#       - master
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: windows-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Show project files
+#         run: dir
+
 name: Build BC App
 
 on:
@@ -11,8 +30,34 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Show project files
-        run: dir
+      - name: Install BcContainerHelper
+        shell: powershell
+        run: |
+          Install-Module BcContainerHelper -Force -AllowClobber
+
+      - name: Create Container and Build
+        shell: powershell
+        run: |
+          $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
+
+          New-BcContainer `
+            -accept_eula `
+            -containerName bcbuild `
+            -artifactUrl $artifactUrl `
+            -auth UserPassword `
+            -Credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force))
+
+          Compile-AppInBCContainer `
+            -containerName bcbuild `
+            -appProjectFolder $env:GITHUB_WORKSPACE `
+            -outputFolder $env:GITHUB_WORKSPACE\output `
+            -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force))
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: BC-App
+          path: output
