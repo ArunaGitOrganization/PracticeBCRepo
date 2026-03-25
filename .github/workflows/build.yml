@@ -57,7 +57,7 @@ jobs:
             -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force))
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: BC-App
           path: output
