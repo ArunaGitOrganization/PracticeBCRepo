@@ -43,18 +43,20 @@ jobs:
         run: |
           $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
 
+          $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
+
           New-BcContainer `
             -accept_eula `
             -containerName bcbuild `
             -artifactUrl $artifactUrl `
             -auth UserPassword `
-            -Credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force))
+            -Credential $credential
 
           Compile-AppInBCContainer `
             -containerName bcbuild `
             -appProjectFolder $env:GITHUB_WORKSPACE `
-            -outputFolder $env:GITHUB_WORKSPACE\output `
-            -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force))
+            -appOutputFolder "$env:GITHUB_WORKSPACE\output" `
+            -credential $credential
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
