@@ -46,7 +46,9 @@ jobs:
           $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
 
           # ✅ FIX: Use actual working directory (NOT env variable)
-          $workspace = (Get-Location).Path
+          # $workspace = (Get-Location).Path
+          # Write-Host "Workspace path: $workspace"
+          $workspace = (Get-Location).Path -replace '\\','/'
           Write-Host "Workspace path: $workspace"
 
           # Create BC Container with correct volume mapping
@@ -58,14 +60,20 @@ jobs:
             -Credential $credential `
             -updateHosts `
             -includeAL `
-            -additionalParameters @("--volume ${workspace}:c:\src")
+            # -additionalParameters @("--volume ${workspace}:c:\src")
+            -additionalParameters @("--volume ${workspace}:/src")
 
           # Compile AL App
+          # Compile-AppInBCContainer `
+          #   -containerName bcbuild `
+          #   -appProjectFolder "c:\src" `
+          #   -appOutputFolder "c:\src\output" `
+          #   -credential $credential
           Compile-AppInBCContainer `
-            -containerName bcbuild `
-            -appProjectFolder "c:\src" `
-            -appOutputFolder "c:\src\output" `
-            -credential $credential
+          -containerName bcbuild `
+          -appProjectFolder "/src" `
+          -appOutputFolder "/src/output" `
+          -credential $credential
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
