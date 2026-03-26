@@ -22,8 +22,8 @@ name: Build BC App
 on:
   push:
     branches:
-      - master
       - main
+      - master
 
 jobs:
   build:
@@ -38,51 +38,29 @@ jobs:
         run: |
           Install-Module BcContainerHelper -Force -AllowClobber
 
-      - name: Create Container and Build
+      - name: Create BC Container
         shell: powershell
         run: |
           $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
 
-          $credential = New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force)
-
-          # ✅ FIX: Use actual working directory (NOT env variable)
-          # $workspace = (Get-Location).Path
-          # Write-Host "Workspace path: $workspace"
-          $workspace = (Get-Location).Path -replace '\\','/'
-          Write-Host "Workspace path: $workspace"
-
-          # Create BC Container with correct volume mapping
           New-BcContainer `
             -accept_eula `
-            -containerName bcbuild `
+            -containerName bccontainer `
             -artifactUrl $artifactUrl `
             -auth UserPassword `
-            -Credential $credential `
-            -updateHosts `
-            -includeAL `
-            # -additionalParameters @("--volume ${workspace}:c:\src")
-            -additionalParameters @("--volume ${workspace}:/src")
+            -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
+            -updateHosts
 
-          # Compile AL App
-          # Compile-AppInBCContainer `
-          #   -containerName bcbuild `
-          #   -appProjectFolder "c:\src" `
-          #   -appOutputFolder "c:\src\output" `
-          #   -credential $credential
+      - name: Compile AL Project
+        shell: powershell
+        run: |
           Compile-AppInBCContainer `
-          -containerName bcbuild `
-          -appProjectFolder "/src" `
-          -appOutputFolder "/src/output" `
-          -credential $credential
+            -containerName bccontainer `
+            -appProjectFolder $env:GITHUB_WORKSPACE `
+            -outputFolder $env:GITHUB_WORKSPACE\output
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BC-App
-          path: output
-
-      - name: Remove Container
-        if: always()
-        shell: powershell
-        run: |
-          Remove-BcContainer -containerName bcbuild
+          path: output/*.app
