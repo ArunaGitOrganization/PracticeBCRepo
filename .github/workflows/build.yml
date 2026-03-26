@@ -51,14 +51,15 @@ jobs:
             -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
             -updateHosts `
             -useBestContainerOS `
-            -includeAL
+            -includeAL `
+            -additionalParameters @("--volume=$($env:GITHUB_WORKSPACE):c:\src")
 
       - name: Compile AL Project
         shell: powershell
         run: |
           Compile-AppInBCContainer `
             -containerName bccontainer `
-            -appProjectFolder $env:GITHUB_WORKSPACE `
+            -appProjectFolder "c:\src" `
             -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
       - name: Create Output Folder
