@@ -38,19 +38,26 @@ jobs:
         run: |
           Install-Module BcContainerHelper -Force -AllowClobber
 
+      # - name: Create BC Container
+      #   shell: powershell
+      #   run: |
+      #     $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
+
+      #     New-BcContainer `
+      #       -accept_eula `
+      #       -containerName bccontainer `
+      #       -artifactUrl $artifactUrl `
+      #       -auth UserPassword `
+      #       -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
+      #       -updateHosts `
+      #       -additionalParameters @("--volume $($env:GITHUB_WORKSPACE):c:\src")
+
       - name: Create BC Container
         shell: powershell
         run: |
           $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
 
-          New-BcContainer `
-            -accept_eula `
-            -containerName bccontainer `
-            -artifactUrl $artifactUrl `
-            -auth UserPassword `
-            -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
-            -updateHosts `
-            -additionalParameters @("--volume $($env:GITHUB_WORKSPACE):c:\src")
+          New-BcContainer -accept_eula -containerName bccontainer -artifactUrl $artifactUrl -auth UserPassword -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) -updateHosts -additionalParameters @("--volume $($env:GITHUB_WORKSPACE):c:\src")
 
       # - name: Compile AL Project
       #   shell: powershell
@@ -65,8 +72,8 @@ jobs:
         run: |
           Compile-AppInBCContainer `
           -containerName bccontainer `
-          -appProjectFolder "c:\src"
-          -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
+          -appProjectFolder "c:\src" `
+          -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
       - name: Create Output Folder
         shell: powershell
