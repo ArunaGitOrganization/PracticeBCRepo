@@ -51,13 +51,35 @@ jobs:
             -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
             -updateHosts
 
+      # - name: Compile AL Project
+      #   shell: powershell
+      #   run: |
+      #     Compile-AppInBCContainer `
+      #       -containerName bccontainer `
+      #       -appProjectFolder $env:GITHUB_WORKSPACE `
+      #       -outputFolder $env:GITHUB_WORKSPACE\output
+
       - name: Compile AL Project
         shell: powershell
         run: |
           Compile-AppInBCContainer `
-            -containerName bccontainer `
-            -appProjectFolder $env:GITHUB_WORKSPACE `
-            -outputFolder $env:GITHUB_WORKSPACE\output
+          -containerName bccontainer `
+          -appProjectFolder $env:GITHUB_WORKSPACE `
+          -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
+
+          # ✅ ADD THIS LINE ONLY
+      - name: Create Output Folder
+        shell: powershell
+        run: |
+        New-Item -ItemType Directory -Path "$env:GITHUB_WORKSPACE\output" -Force
+
+
+      - name: Copy App File
+        shell: powershell
+        run: |
+          Copy-Item `
+          -Path "C:\ProgramData\BcContainerHelper\Extensions\bccontainer\*.app" `
+          -Destination "$env:GITHUB_WORKSPACE\output" -Recurse
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
