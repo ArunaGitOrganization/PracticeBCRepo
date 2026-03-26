@@ -59,6 +59,7 @@ jobs:
           -updateHosts `
           -useBestContainerOS `
           -includeAL
+          -additionalParameters @("--volume=$($env:GITHUB_WORKSPACE):c:\run\my")
 
       # - name: Compile AL Project
       #   shell: powershell
@@ -73,7 +74,7 @@ jobs:
         run: |
           Compile-AppInBCContainer `
           -containerName bccontainer `
-          -appProjectFolder $env:GITHUB_WORKSPACE `
+          -appProjectFolder "c:\run\my" `
           -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
       - name: Create Output Folder
