@@ -38,56 +38,41 @@ jobs:
         run: |
           Install-Module BcContainerHelper -Force -AllowClobber
 
-      # - name: Create BC Container
-      #   shell: powershell
-      #   run: |
-      #     $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
-
-      #     New-BcContainer -accept_eula -containerName bccontainer -artifactUrl $artifactUrl -auth UserPassword -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) -updateHosts -additionalParameters @("--volume $($env:GITHUB_WORKSPACE):c:\src")
-
       - name: Create BC Container
         shell: powershell
         run: |
           $artifactUrl = Get-BCArtifactUrl -type Sandbox -country us -select Latest
 
           New-BcContainer `
-          -accept_eula `
-          -containerName bccontainer `
-          -artifactUrl $artifactUrl `
-          -auth UserPassword `
-          -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
-          -updateHosts `
-          -useBestContainerOS `
-          -includeAL
-          -additionalParameters @("--volume=$($env:GITHUB_WORKSPACE):c:\run\my")
-
-      # - name: Compile AL Project
-      #   shell: powershell
-      #   run: |
-      #     Compile-AppInBCContainer `
-      #     -containerName bccontainer `
-      #     -appProjectFolder "c:\src" `
-      #     -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
+            -accept_eula `
+            -containerName bccontainer `
+            -artifactUrl $artifactUrl `
+            -auth UserPassword `
+            -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
+            -updateHosts `
+            -useBestContainerOS `
+            -includeAL `
+            -additionalParameters @("--volume=$($env:GITHUB_WORKSPACE):c:\run\my")
 
       - name: Compile AL Project
         shell: powershell
         run: |
           Compile-AppInBCContainer `
-          -containerName bccontainer `
-          -appProjectFolder "c:\run\my" `
-          -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
+            -containerName bccontainer `
+            -appProjectFolder "c:\run\my" `
+            -credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
       - name: Create Output Folder
         shell: powershell
         run: |
-          -Credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
+          New-Item -ItemType Directory -Path "$env:GITHUB_WORKSPACE\output" -Force
 
       - name: Copy App File
         shell: powershell
         run: |
           Copy-Item `
-          -Path "C:\ProgramData\BcContainerHelper\Extensions\bccontainer\*.app" `
-          -Destination "$env:GITHUB_WORKSPACE\output" -Recurse
+            -Path "C:\ProgramData\BcContainerHelper\Extensions\bccontainer\*.app" `
+            -Destination "$env:GITHUB_WORKSPACE\output" -Recurse
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
