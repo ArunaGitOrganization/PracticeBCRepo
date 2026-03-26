@@ -67,7 +67,7 @@ jobs:
           -appProjectFolder $env:GITHUB_WORKSPACE `
           -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
-          # ✅ ADD THIS LINE ONLY
+
       - name: Create Output Folder
         shell: powershell
         run: |
