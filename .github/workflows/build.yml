@@ -71,7 +71,7 @@ jobs:
       - name: Create Output Folder
         shell: powershell
         run: |
-        New-Item -ItemType Directory -Path "$env:GITHUB_WORKSPACE\output" -Force
+         -Credential (New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force))
 
 
       - name: Copy App File
