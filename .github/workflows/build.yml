@@ -49,7 +49,7 @@ jobs:
             -artifactUrl $artifactUrl `
             -auth UserPassword `
             -credential (New-Object pscredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)) `
-            -updateHosts
+            -updateHosts `
             -additionalParameters @("--volume $($env:GITHUB_WORKSPACE):c:\src")
 
       # - name: Compile AL Project
