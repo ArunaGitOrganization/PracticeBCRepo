@@ -6,7 +6,7 @@ namespace DefaultPublisher.GitHubProject;
 
 using Microsoft.Sales.Customer;
 
-pageextension 50100 CustomerListExt extends "Customer List"
+pageextension 50120 CustomerListExt extends "Customer List"
 {
     trigger OnOpenPage();
     begin
