@@ -45,11 +45,11 @@ jobs:
 
           $credential = New-Object PSCredential 'admin',(ConvertTo-SecureString 'P@ssword1' -AsPlainText -Force)
 
-          # ✅ CRITICAL FIX: Convert path for Docker
-          $workspace = (Get-Location).Path -replace '\\','/'
-          Write-Host "Workspace path: $workspace"
+          # Get workspace path
+          $workspace = (Get-Location).Path
+          Write-Host "Workspace: $workspace"
 
-          # Create container with correct volume mapping
+          # ✅ Use BcContainerHelper native volume (CORRECT WAY)
           New-BcContainer `
             -accept_eula `
             -containerName bccontainer `
@@ -59,13 +59,13 @@ jobs:
             -updateHosts `
             -useBestContainerOS `
             -includeAL `
-            -additionalParameters @("--volume ${workspace}:/src")
+            -volume @("$workspace:c:\run\my")
 
           # Compile AL project
           Compile-AppInBCContainer `
             -containerName bccontainer `
-            -appProjectFolder "/src" `
-            -appOutputFolder "/src/output" `
+            -appProjectFolder "c:\run\my" `
+            -appOutputFolder "c:\run\my\output" `
             -credential $credential
 
       - name: Upload Artifact
