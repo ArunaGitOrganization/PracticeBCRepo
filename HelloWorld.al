@@ -6,12 +6,13 @@ namespace DefaultPublisher.GitHubProject;
 
 using Microsoft.Sales.Customer;
 
-pageextension 50120 CustomerListExt extends "Customer List"
+pageextension 50140 CustomerListExt extends "Customer List"
 {
     trigger OnOpenPage();
     begin
         Message('App published: Hello world');
         Message('Welcome');
         Message('Hello');
+        Message('Test Checking');
     end;
 }

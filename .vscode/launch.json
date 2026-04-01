@@ -7,12 +7,11 @@
             "type": "al",
             "environmentType": "Sandbox",
             "environmentName": "Learning-Sandbox",
+            "tenant": "58f577d1-a54c-410c-8cba-0f34d1b2204f",
             "startupObjectId": 22,
             "startupObjectType": "Page",
             "breakOnError": "All",
-            "launchBrowser": true,
-            "enableLongRunningSqlStatements": true,
-            "enableSqlInformationDebugger": true
+            "launchBrowser": true
         }
     ]
 }
