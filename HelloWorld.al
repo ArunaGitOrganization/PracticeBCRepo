@@ -14,6 +14,5 @@ pageextension 50140 CustomerListExt extends "Customer List"
         Message('Welcome');
         Message('Hello');
         Message('Test Checking');
-        Message('Hello from feature branch');
     end;
 }
