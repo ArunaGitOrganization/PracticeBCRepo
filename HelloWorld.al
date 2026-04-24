@@ -19,5 +19,6 @@ pageextension 50140 CustomerListExt extends "Customer List"
         Message('XYZ');
         Message('Trail Check');
         Message('Trail check1');
+        Message('Trail Check1');
     end;
 }
